@@ -89,9 +89,10 @@ class MainActivity : AppCompatActivity(), OnNewsClickListener, PopupMenu.OnMenuI
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-//                if (!newText.isNullOrEmpty()) {
-//                    viewModel.getNewsWithSource(newText,searchHistoryDao)
-//                }
+                if (newText != null) {
+                    if (newText == "")
+                        viewModel.getAllNews()
+                }
                 return true
             }
         })
