@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">News</string>
+    <string name="search_hint">Search with news source</string>
+    <string name="source">"Source- %s"</string>
+</resources>
