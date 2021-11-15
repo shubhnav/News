@@ -1,6 +1,6 @@
 package com.example.news.api
 
-import com.example.news.model.Response
+import com.example.news.model.ResponseData
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -11,12 +11,13 @@ interface ApiInterface {
     fun getTotalNews(
         @Query("country") country: String?,
         @Query("apiKey") apiKey: String?
-    ): Call<Response?>?
+    ): Call<ResponseData?>?
 
     @GET("v2/top-headlines")
     fun getNewsWithSource(
-        @Query("sources") sources: String?,
+        @Query("q") sources: String?,
+        @Query("country") country: String?,
         @Query("apiKey") apiKey: String?
-    ): Call<Response?>?
+    ): Call<ResponseData?>?
 
 }

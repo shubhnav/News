@@ -2,6 +2,6 @@ package com.example.news.listeners
 
 import com.example.news.model.News
 
-interface onNewsClickLisener {
+interface OnNewsClickListener {
     fun onSelectNews(news: News)
 }

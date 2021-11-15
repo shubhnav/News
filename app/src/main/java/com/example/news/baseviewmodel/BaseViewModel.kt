@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.news.api.Api
 import com.example.news.api.ApiInterface
-import com.example.news.db.AppDatabase
+import com.example.news.db.SearchHistoryDao
 import com.example.news.model.News
-import com.example.news.model.Response
+import com.example.news.model.ResponseData
 import com.example.news.model.SearchHistory
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,53 +23,52 @@ class BaseViewModel : ViewModel() {
         getAllNews()
     }
 
-    private fun getAllNews() {
+    fun getAllNews() {
         val result = client.getTotalNews("us", API_KEY)
-        result?.enqueue(object : Callback<Response?> {
+        result?.enqueue(object : Callback<ResponseData?> {
             override fun onResponse(
-                call: Call<Response?>,
-                response: retrofit2.Response<Response?>
+                call: Call<ResponseData?>,
+                responseData: retrofit2.Response<ResponseData?>
             ) {
                 Log.d(TAG, "")
-                newsLiveData.postValue(response.body()?.articles)
+                newsLiveData.postValue(responseData.body()?.articles)
             }
 
-            override fun onFailure(call: Call<Response?>, t: Throwable) {
+            override fun onFailure(call: Call<ResponseData?>, t: Throwable) {
                 Log.d(TAG, "${t.message}")
                 newsLiveData.postValue(null)
             }
-
         })
     }
 
-    fun fillSearchHistory(db: AppDatabase) {
+    fun fillSearchHistory(searchHistoryDao: SearchHistoryDao) {
         Log.d(TAG, "")
         val thread = Thread {
-            val list = db.searchHistoryDao().getAll().map { it.source }
+            val list = searchHistoryDao.getAll().map { it.source }
             searchHistory.postValue(list)
         }
         thread.start()
     }
 
-    fun getNewsWithSource(query: String, db: AppDatabase) {
-        val result = client.getNewsWithSource(query, API_KEY)
-        result?.enqueue(object : Callback<Response?> {
+    fun getNewsWithSource(query: String, searchHistoryDao: SearchHistoryDao) {
+        val result = client.getNewsWithSource(query, "us", API_KEY)
+        result?.enqueue(object : Callback<ResponseData?> {
             override fun onResponse(
-                call: Call<Response?>,
-                response: retrofit2.Response<Response?>
+                call: Call<ResponseData?>,
+                responseData: retrofit2.Response<ResponseData?>
             ) {
                 Log.d(TAG, "")
-                val list = response.body()?.articles
+                val list = responseData.body()?.articles
                 if (!list.isNullOrEmpty()) {
                     newsLiveData.postValue(list)
                     val thread = Thread {
-                        db.searchHistoryDao().insertAll(SearchHistory(query))
+                        searchHistoryDao.insertAll(SearchHistory(query))
                     }
                     thread.start()
                 }
             }
 
-            override fun onFailure(call: Call<Response?>, t: Throwable) {
+            override fun onFailure(call: Call<ResponseData?>, t: Throwable) {
                 Log.e(TAG, "${t.message}")
                 newsLiveData.postValue(null)
             }

@@ -15,7 +15,7 @@ class DetailedNews : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val url = intent.getStringExtra(NEWS_URL)
         setContentView(R.layout.detailed_news)
-        webview = findViewById<WebView>(R.id.webview)
+        webview = findViewById(R.id.webview)
         if (url != null) {
             webview.loadUrl(url)
         }
